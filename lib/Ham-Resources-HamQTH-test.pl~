@@ -1,0 +1,37 @@
+#!/usr/bin/perl
+#
+# Ham::Resources::HamQTH test module
+# Test and Use procedures
+#
+# (c) Carlos Juan Diaz <ea3hmb at gmail.com> on Jan. 2012
+#
+
+use strict;
+use warnings;
+use Ham::Resources::HamQTH;
+
+my $username = "ea3hmb";
+my $password = "km3171g";
+my $callsign = "ea3hmb";
+
+my $qth = Ham::Resources::HamQTH->new(
+	callsign => $callsign,
+	username => $username,
+	password => $password
+);
+
+# get info from a callsign
+my $bio = $qth->get_bio;
+foreach (sort keys %{$bio}){
+	print $_.": ".$bio->{$_}."\n";
+}
+
+# print a specific info
+print "\n\nCallsign found: ".$bio->{callsign}."\n" if (!$bio->{error});
+print "\n";
+
+# get a list of available elements
+$bio = $qth->get_list;
+foreach my $tag (@{$bio}) {
+	print $tag."\n";
+}
