@@ -5,10 +5,9 @@ use warnings;
 
 use LWP::UserAgent;
 use XML::Reader;
-use Data::Dumper;
 use vars qw($VERSION);
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 my $qth_url = "http://www.hamqth.com";
 my $site_name = 'HamQTH XML Database service';
@@ -126,11 +125,6 @@ sub get_bio
 
 		my $bio = $self->_get_content($url);
 		
-#		if ($bio->{error} =~ m/Session.+/i) 
-#		{ 
-#			$self->login; 
-#		}
-
 		if (!$bio->{_session_id}) {
 			#$self->{is_error} = 1;
 			$self->{error} = $bio->{error};
@@ -250,7 +244,7 @@ Ham::Resources::HamQTH - A simple and easy object oriented front end for HAMQTH.
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =head1 SYNOPSIS
 
