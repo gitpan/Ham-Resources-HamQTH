@@ -8,7 +8,7 @@ use XML::Reader;
 use Data::Dumper;
 use vars qw($VERSION);
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 my $qth_url = "http://www.hamqth.com";
 my $site_name = 'HamQTH XML Database service';
@@ -250,7 +250,7 @@ Ham::Resources::HamQTH - A simple and easy object oriented front end for HAMQTH.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSIS
 

@@ -3,4 +3,5 @@ Revision history for Perl extension Ham::Resources::HamQTH.
 0.01  Mon Jan 23 18:04:09 2012
 	- original version; created by h2xs 1.23 with options
 		-cfn Ham::Resources::HamQTH
-
+0.02	Wed Feb 08 11:19:00 2012
+	- [Bug solved] Add prerequisites on Makefile.PL

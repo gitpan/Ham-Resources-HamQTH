@@ -5,10 +5,13 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME              => 'Ham::Resources::HamQTH',
     VERSION_FROM      => 'lib/Ham/Resources/HamQTH.pm', # finds $VERSION
-    PREREQ_PM         => {}, # e.g., Module::Name => 1.1
+    PREREQ_PM         => {
+    		'LWP::UserAgent'	=> 0,
+    		'XML::Reader'		=> 0,
+    }, 
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/Ham/Resources/HamQTH.pm', # retrieve abstract from module
-       AUTHOR         => 'Carlos Juan <cjuan@>') : ()),
+       AUTHOR         => 'Carlos Juan <ea3hmb@gmail.com>') : ()),
     LIBS              => [''], # e.g., '-lm'
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'
     INC               => '-I.', # e.g., '-I. -I/usr/include/other'
