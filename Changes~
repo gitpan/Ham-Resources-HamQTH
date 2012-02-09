@@ -1,8 +1,0 @@
-Revision history for Perl extension Ham::Resources::HamQTH.
-
-0.01  Mon Jan 23 18:04:09 2012
-	- original version; created by h2xs 1.23 with options
-		-cfn Ham::Resources::HamQTH
-0.02	Thu Feb 02 12.55.00 2012
-	- Session ID control
-

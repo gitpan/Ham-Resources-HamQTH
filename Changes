@@ -7,3 +7,5 @@ Revision history for Perl extension Ham::Resources::HamQTH.
 	- [Minor Bug solved] Add prerequisites on Makefile.PL
 0.03	Wed Feb 08 16:44:00 2012
 	- [Minor Bug solved] Mod prerequisites version on Makefile.PL 
+0.04	Thu Feb 09 15:57:10 2012
+	- Clean distribution of trash ... sorry

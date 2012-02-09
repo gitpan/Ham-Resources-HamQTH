@@ -1,9 +1,0 @@
-Changes
-HamQTH.xs
-Makefile.PL
-MANIFEST
-ppport.h
-README
-Licence.txt
-t/Ham-Resources-HamQTH.t
-lib/Ham/Resources/HamQTH.pm
