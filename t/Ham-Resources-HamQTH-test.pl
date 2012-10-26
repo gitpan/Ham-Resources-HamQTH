@@ -13,11 +13,13 @@ use Ham::Resources::HamQTH;
 my $username = ""; # put your username HamQTH account here
 my $password = ""; # put your password HamQTH here
 my $callsign = $ARGV[0]; # callsign to search how command line argument
+my $strip_html = 1; # 1 = text plain, 0 = HTML code
 
 my $qth = Ham::Resources::HamQTH->new(
 	callsign => $callsign,
 	username => $username,
-	password => $password
+	password => $password,
+	strip_html_bio => $strip_html,
 );
 
 # get info from a callsign

@@ -9,3 +9,8 @@ Revision history for Perl extension Ham::Resources::HamQTH.
 	- [Minor Bug solved] Mod prerequisites version on Makefile.PL 
 0.04	Thu Feb 09 15:57:10 2012
 	- Clean distribution of trash ... sorry
+0.05	Thu Oct 26 18:46:03 2012
+	- Add link to show the callsign website
+	- Add the bio of the found station
+	- Add argument, strip_html_bio, for show bio with or without html code
+

@@ -7,11 +7,12 @@ use LWP::UserAgent;
 use XML::Reader;
 use vars qw($VERSION);
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 my $qth_url = "http://www.hamqth.com";
 my $site_name = 'HamQTH XML Database service';
 my $default_timeout = 10;
+my $default_strip_html = 1;
 
 
 sub new 
@@ -26,6 +27,7 @@ sub new
 	$self->set_callsign($args{callsign}) if $args{callsign};
 	$self->set_username($args{username}) if $args{username};
 	$self->set_password($args{password}) if $args{password};
+	$self->set_strip_html($args{strip_html_bio});
 	return $self;
 }
 
@@ -58,6 +60,20 @@ sub set_password
 	$self->{_password} = $password;
 }
 
+sub set_strip_html
+{
+	my $self = shift;
+	my $strip_html_bio = shift;
+	
+	if (!$strip_html_bio) 
+	{
+		$strip_html_bio = 0;
+	} else {
+		$strip_html_bio = $default_strip_html;
+	}
+	
+	$self->{_strip_html} = $strip_html_bio;
+}
 sub set_key
 {
 	my $self = shift;
@@ -122,8 +138,9 @@ sub get_bio
 	else 
 	{
 		my $url = "$qth_url/xml.php?id=".$self->{_session_id}."&callsign=".$self->{_callsign}."&prg=".$self->{_agent};
-
 		my $bio = $self->_get_content($url);
+		$url = "$qth_url/xml_bio.php?id=".$self->{_session_id}."&callsign=".$self->{_callsign}."&prg=".$self->{_agent}."&strip_html=".$self->{_strip_html};
+		$bio = $self->_get_content($url);
 		
 		if (!$bio->{_session_id}) {
 			$self->{error} = $bio->{error};
@@ -174,6 +191,7 @@ sub _get_content
 			$self->{$xml->tag} = $xml->value;
 		}
 	}
+	$self->{link} = $qth_url."/".$self->{_callsign};
 	&_save_session_id($self); # save SESSION ID
 	return $self;
 }
@@ -243,7 +261,7 @@ Ham::Resources::HamQTH - A simple and easy object oriented front end for HAMQTH.
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =head1 SYNOPSIS
 
@@ -303,6 +321,7 @@ saved SESSION_ID.
  username	yes		a text with a valid username HamQTH.com  account
  password	yes		a text with a valid password HamQTH.com  account
  timeout	no		an integer of seconds to wait for the timeout of the XML service. By default = 10
+ strip_html_bio	no		binary for strip HTML code from the bio. By default = 0 (HTML code) 
 
 =head1 METHODS
 

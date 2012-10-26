@@ -6,4 +6,5 @@ ppport.h
 README
 LICENSE
 t/Ham-Resources-HamQTH.t
+t/Ham-Resources-HamQTH-test.pl
 lib/Ham/Resources/HamQTH.pm
