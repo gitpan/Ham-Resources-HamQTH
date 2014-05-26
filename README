@@ -1,4 +1,4 @@
-Ham-Resources-HamQTH version 0.05
+Ham-Resources-HamQTH version 0.06
 =================================
 
 This is the README file for Ham::Resources::HamQTH, an object oriented front end for the HAMQTH.com Amateur Radio Callsign free database.
@@ -21,7 +21,7 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
   - LWP::UserAgent
-  - XML::Reader
+  - XML::LibXML::Reader
   - Internet connection
   - A valid account for use the HamQTH.com database service. Register is free.
 
@@ -40,5 +40,5 @@ useful, but it is provided "as is" and without any express
 or implied warranties. For details, see the full text of
 the license in the file LICENSE.
 
-Copyright (C) 2012 by Carlos Juan Diaz (CJUAN) - EA3HMB <ea3hmb_at_gmail.com>
+Copyright (C) 2012-2014 by Carlos Juan Diaz (CJUAN) - EA3HMB <ea3hmb_at_gmail.com>
 

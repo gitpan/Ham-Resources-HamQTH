@@ -13,4 +13,8 @@ Revision history for Perl extension Ham::Resources::HamQTH.
 	- Add link to show the callsign website
 	- Add the bio of the found station
 	- Add argument, strip_html_bio, for show bio with or without html code
-
+0.06	Mon May 26 13:30:35 2014
+	- Change dependecy from XML::Reader to XML::LibXML::Reader
+	- Add function get_dxcc
+	
+	

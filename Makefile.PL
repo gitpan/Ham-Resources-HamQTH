@@ -7,7 +7,7 @@ WriteMakefile(
     VERSION_FROM      => 'lib/Ham/Resources/HamQTH.pm', # finds $VERSION
     PREREQ_PM         => {
     		'LWP::UserAgent' => 0,
-    		'XML::Reader' => 0,
+    		'XML::LibXML::Reader' => 0,
     		'Test::More' => 0,
     }, 
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005

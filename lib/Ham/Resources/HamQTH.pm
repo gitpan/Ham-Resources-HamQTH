@@ -4,10 +4,11 @@ use strict;
 use warnings;
 
 use LWP::UserAgent;
-use XML::Reader;
+use XML::LibXML::Reader;
 use vars qw($VERSION);
+use Data::Dumper;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 my $qth_url = "http://www.hamqth.com";
 my $site_name = 'HamQTH XML Database service';
@@ -24,7 +25,7 @@ sub new
 
 	$self->_set_agent;
 	$self->set_timeout($args{timeout});
-	$self->set_callsign($args{callsign}) if $args{callsign};
+	$self->set_callsign($args{callsign}) if $args{callsign}; 
 	$self->set_username($args{username}) if $args{username};
 	$self->set_password($args{password}) if $args{password};
 	$self->set_strip_html($args{strip_html_bio});
@@ -151,6 +152,52 @@ sub get_bio
 	return $result;
 }
 
+sub get_dxcc
+{
+	my $self = shift;
+	my $result = {};
+	
+	if (!$self->{_callsign}) 
+	{
+		$self->{error} = "Ops!! ... Without a callsign I can not search anything";
+		&_clean_response($self);
+	}	
+
+	&_check_session_id($self);	
+	
+	if (!$self->{_session_id}) 
+	{
+		$self->login;
+	}
+	
+	if ($self->{error}) 
+	{
+		$result->{error} = $self->{error};
+	} 
+	else 
+	{
+		#my $url = "$qth_url/xml.php?id=".$self->{_session_id}."&callsign=".$self->{_callsign}."&prg=".$self->{_agent};
+		#my $bio = $self->_get_content($url);
+		my $url = "$qth_url/dxcc.php?id=".$self->{_session_id}."&callsign=".$self->{_callsign}."&prg=".$self->{_agent};
+		my $bio = $self->_get_content($url);
+		
+		if (!$bio->{_session_id}) {
+			$self->{error} = $bio->{error};
+			return undef;
+		}
+		
+		if ($self->{adif} == 0) 
+			{
+				$self->{error} = "Not a valid DXCC";
+				&_clean_response($self);
+		}	
+		
+		$result = &_clean_response($bio);
+	}
+	return $result;
+}
+
+
 # -----------------------
 #	PRIVATE SUBS
 # -----------------------
@@ -167,7 +214,6 @@ sub _get_content
 	my $ua = LWP::UserAgent->new( timeout=>$self->{_timeout} );
 	$ua->agent( $self->{_agent} );
 	my $request = HTTP::Request->new('GET', $url);
-
 	my $response = $ua->request($request);
 
 	if (!$response->is_success) 
@@ -177,21 +223,20 @@ sub _get_content
 	}
 
 	my $content = $response->content;
-
-	my $xml = XML::Reader->new(\$content);
-
-	while ($xml->iterate) 
+	$content =~ s/&/&amp;/; # this character will crash the parser
+	my $reader = XML::LibXML::Reader->new( encoding => 'UTF-8', string => $content );
+	my $tag_name;
+	
+	while ($reader->read) 
 	{
-		if ($xml->tag eq "session_id") 
-		{ 
-			$self->{_session_id} = $xml->value; 
-		} 
-		else 
-		{
-			$self->{$xml->tag} = $xml->value;
-		}
+		$tag_name = $reader->name if ($reader->nodeType == 1);
+		$self->{_session_id} = $reader->value if ($reader->nodeType == 3 && $tag_name eq "session_id");
+		$self->{$tag_name} = $reader->value if ($reader->nodeType == 3 && $tag_name ne "session_id");
 	}
-	$self->{link} = $qth_url."/".$self->{_callsign};
+	if (!$self->{error} || $self->{error} ne 'Callsign not found' || $self->{error} eq '' ) {
+
+		$self->{link} = $qth_url."/".$self->{_callsign} if length($self->{_callsign}) > 3;
+	}
 	&_save_session_id($self); # save SESSION ID
 	return $self;
 }
@@ -231,7 +276,7 @@ sub _check_timestamp
 {
 	my $self = shift;
 	my $time_actual_epoch = time();
-	my $timestamp_epoch = $self->{_timestamp};
+	my $timestamp_epoch = $self->{_timestamp} || 0;
 	my $timestamp_epoch_plus_1h = $timestamp_epoch + (1*60*60);
 
 	if ($time_actual_epoch > $timestamp_epoch_plus_1h or $time_actual_epoch < $timestamp_epoch)
@@ -261,7 +306,7 @@ Ham::Resources::HamQTH - A simple and easy object oriented front end for HAMQTH.
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =head1 SYNOPSIS
 
@@ -277,6 +322,12 @@ Version 0.05
 	my $bio = $qth->get_bio;
 	foreach (sort keys %{$bio}){
 		print $_.": ".$bio->{$_}."\n";
+	}
+	
+	# get DXCC information from one callsign found
+	my $dxcc = $qth->get_dxcc;
+	foreach (sort keys %{$dxcc}){
+		print $_.": ".$dxcc->{$_}."\n";
 	}
 	
 	# print a specific info
@@ -307,7 +358,7 @@ saved SESSION_ID.
 =head2 new()
 	
  Usage	: my $qth = Ham::Resources::HamQTH->new(
-		callsign => 'callsign to search',
+		callsign => 'callsign  or DXCC code to search',
 		username => 'your HamQTH username',
 		password => 'your HamQTH password'
 		);
@@ -317,7 +368,7 @@ saved SESSION_ID.
 	
  key		required?	value
  -------  	---------	-----
- callsign	yes		a text with the callsign to find
+ callsign	yes		a text with the callsign or DXCC code to find
  username	yes		a text with a valid username HamQTH.com  account
  password	yes		a text with a valid password HamQTH.com  account
  timeout	no		an integer of seconds to wait for the timeout of the XML service. By default = 10
@@ -339,6 +390,13 @@ saved SESSION_ID.
  Returns  : a hash
  Args	  : n/a
 
+=head2 get_dxcc()
+
+ Usage: my $dxcc = $qth->get_dxcc;
+ Function: provides detail info of a DXCC
+ Returns: a hash
+ Args: n/a 
+
 =head2 error()
 
  Usage	  : my $error = $bio->{error}
@@ -356,7 +414,7 @@ None by default.
 
 =item * LWP::UserAgent
 
-=item * XML::Reader;
+=item * XML::LibXML::Reader;
 
 =item * Internet connection
 
@@ -366,6 +424,7 @@ None by default.
 =head1 ACKNOWLEDGEMENTS
 
 This module accesses the data provided free by Petr (OK2CQR). See L<http://www.hamqth.com>
+DXCC tables provided by Martin (OK1RR).
 
 =head1 SEE ALSO
 
@@ -377,7 +436,7 @@ You can create an account for use this module at L<http://www.hamqth.com>
 
 =head1 AUTHOR
 
-Carlos Juan, E<lt>ea3hmb_at_gmail.com>
+Carlos Juan, E<lt>ea3hmb_at_gmail.com> | E<lt>cjuan_at_cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
@@ -390,7 +449,7 @@ useful, but it is provided "as is" and without any express
 or implied warranties. For details, see the full text of
 the license in the file LICENSE.
 
-Copyright (C) 2012 by Carlos Juan Diaz (CJUAN) - EA3HMB E<lt>ea3hmb_at_gmail.com>
+Copyright (C) 2012-2014 by Carlos Juan Diaz (CJUAN) - EA3HMB E<lt>ea3hmb_at_gmail.com | E<lt>cjuan_at_cpan.org>
 
 
 
