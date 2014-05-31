@@ -11,8 +11,8 @@ use warnings;
 use lib('../lib/Ham/Resources/');
 use HamQTH;
 
-my $username = "ea3hmb"; # put your username HamQTH account here
-my $password = "km3171g"; # put your password HamQTH here
+my $username = ""; # put your username HamQTH account here
+my $password = ""; # put your password HamQTH here
 my $callsign = $ARGV[0]; # callsign to search how command line argument
 my $strip_html = 1; # 1 = text plain, 0 = HTML code
 my $bio;
